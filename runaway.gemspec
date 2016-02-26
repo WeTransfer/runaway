@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "lib/runaway.rb",
+    "runaway.gemspec",
     "spec/runaway_spec.rb",
     "spec/spec_helper.rb"
   ]
