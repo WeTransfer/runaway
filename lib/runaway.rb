@@ -1,7 +1,7 @@
 require 'securerandom'
 
 module Runaway
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
   
   UncleanExit = Class.new(StandardError)
   Child = Class.new(StandardError)
@@ -49,9 +49,12 @@ module Runaway
       (Process.kill(sig, child_pid) rescue Errno::ESRCH) if !has_quit
     }
     
+    last_heartbeat_sent = started_at
     begin
       loop do
-        sleep heartbeat_interval
+        sleep 0.5
+        
+        break if has_quit
         
         # First check if it has exceeded it's wall clock time allowance
         running_for = Time.now - started_at
@@ -59,6 +62,11 @@ module Runaway
           raise RuntimeExceeded.new('%d did not terminate after %d secs (limited to %d secs)' % [
             child_pid, running_for, must_quit_within])
         end
+        
+        # Then check if it is time to poke it with a heartbeat
+        at = Time.now
+        next if (at - last_heartbeat_sent) < heartbeat_interval
+        last_heartbeat_sent = at
         
         # Then send it the USR2 as a "ping", and expect a "pong" in
         # the form of a pipe write. If the pipe is still not readable
