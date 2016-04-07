@@ -1,16 +1,7 @@
 # runaway
 
-Spin off work into child processes and terminate it on time
-
-To simply ensure the process keeps responding (the Ruby runtime still can do context-switching
-and can respond to Unix signals):
-
-    Runaway.spin do
-      ActiveRAMGobbler.load_many_things(num_things: 10_000_000)
-    end
-
-If you need the process to be done within a certain time period (and if it takes longer
-it probably is hanging):
+Spin off work into child processes and terminate it on time. If you need the process to be done
+within a certain time period (and if it takes longer it probably is hanging):
 
     Runaway.spin(must_quite_within: 15) do # ensures termination within 15 seconds
       `/bin/proprietary_render_server/bin/render --put-server-on-fire=yes`
